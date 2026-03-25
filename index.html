@@ -1,3 +1,89 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>My Mobile Todo</title>
+  <style>
+    /* 1. 디자인 (CSS) */
+    :root { --primary: #6c5ce7; --bg: #f8f9fa; }
+    
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+    body { 
+      margin: 0; padding: 0; font-family: sans-serif; 
+      background: var(--bg); display: flex; justify-content: center;
+      height: 100vh; /* 화면 높이 고정 */
+      overflow: hidden; /* 바깥쪽 스크롤 방지 */
+    }
+
+    .todo-app {
+      width: 100%; max-width: 450px; background: white;
+      height: 100%; /* 부모 높이 따라감 */
+      display: flex; flex-direction: column; /* 세로 배치 */
+      padding: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.05);
+    }
+
+    header { flex-shrink: 0; } /* 헤더는 크기 고정 */
+    header h2 { color: var(--primary); margin: 0 0 10px 0; font-size: 1.4rem; }
+    
+    #date-picker {
+      width: 100%; padding: 12px; border-radius: 8px;
+      border: 1px solid #ddd; margin-bottom: 15px; font-size: 1rem;
+    }
+
+    .input-section { 
+      display: flex; gap: 10px; margin-bottom: 20px; flex-shrink: 0; 
+    }
+    
+    #todo-input {
+      flex: 1; padding: 12px; border: 1px solid #ddd;
+      border-radius: 8px; font-size: 16px;
+    }
+
+    #add-btn {
+      padding: 0 15px; background: var(--primary); color: white;
+      border: none; border-radius: 8px; font-weight: bold;
+    }
+
+    /* [핵심] 리스트 영역만 스크롤되게 설정 */
+    #todo-list {
+      list-style: none; padding: 0; margin: 0;
+      flex: 1; /* 남은 공간 모두 차지 */
+      overflow-y: auto; /* 내용 많아지면 스크롤 발생 */
+      display: flex; flex-direction: column;
+      padding-bottom: 20px;
+    }
+
+    li {
+      display: flex; align-items: center; padding: 15px;
+      background: #f1f2f6; border-radius: 10px; margin-bottom: 8px;
+      flex-shrink: 0; /* 높이 유지 */
+    }
+
+    li.completed { order: 1; opacity: 0.5; background: #eee; }
+    li.completed span { text-decoration: line-through; }
+
+    .check-box {
+      width: 24px; height: 24px; border: 2px solid var(--primary);
+      border-radius: 50%; margin-right: 12px; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+    }
+
+    li.completed .check-box { background: var(--primary); }
+    li.completed .check-box::after { content: '✔'; color: white; font-size: 12px; }
+
+    li span { flex: 1; font-size: 1rem; word-break: break-all; }
+    
+    .del-btn { color: #ff7675; border: none; background: none; padding: 5px; }
+
+    /* 스크롤바 디자인 (선택사항) */
+    #todo-list::-webkit-scrollbar { width: 5px; }
+    #todo-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+  </style>
+</head>
+<body>
+
 <div class="todo-app">
   <header>
     <h2>📅 My Todo Archive</h2>
@@ -5,117 +91,45 @@
   </header>
   
   <form id="todo-form" class="input-section">
-    <input type="text" id="todo-input" placeholder="할 일을 입력하고 엔터를 치세요" required>
+    <input type="text" id="todo-input" placeholder="할 일을 입력하세요" required>
     <button type="submit" id="add-btn">추가</button>
   </form>
 
   <ul id="todo-list"></ul>
 </div>
 
-<style>
-  /* --- 디자인 (CSS) --- */
-  :root { --primary: #6c5ce7; --bg: #f8f9fa; }
-  
-  body { 
-    margin: 0; font-family: sans-serif; background: var(--bg); 
-    display: flex; justify-content: center; 
-  }
-
-  .todo-app {
-    width: 100%; max-width: 450px; background: white;
-    min-height: 100vh; padding: 20px; box-sizing: border-box;
-  }
-
-  header h2 { color: var(--primary); margin-bottom: 10px; }
-  
-  #date-picker {
-    width: 100%; padding: 12px; border-radius: 8px;
-    border: 1px solid #ddd; margin-bottom: 20px; font-size: 1rem;
-  }
-
-  .input-section { display: flex; gap: 10px; margin-bottom: 20px; }
-  
-  #todo-input {
-    flex: 1; padding: 12px; border: 1px solid #ddd;
-    border-radius: 8px; font-size: 16px; /* 모바일 줌 방지 */
-  }
-
-  #add-btn {
-    padding: 0 20px; background: var(--primary); color: white;
-    border: none; border-radius: 8px; cursor: pointer; font-weight: bold;
-  }
-
-  ul { list-style: none; padding: 0; display: flex; flex-direction: column; }
-
-  li {
-    display: flex; align-items: center; padding: 15px;
-    background: #f1f2f6; border-radius: 10px; margin-bottom: 8px;
-  }
-
-  /* 완료 시 맨 밑으로 보내는 핵심 스타일 */
-  li.completed { order: 1; opacity: 0.5; background: #eee; }
-  li.completed span { text-decoration: line-through; }
-
-  .check-box {
-    width: 24px; height: 24px; border: 2px solid var(--primary);
-    border-radius: 50%; margin-right: 15px; cursor: pointer;
-    display: flex; align-items: center; justify-content: center;
-  }
-
-  li.completed .check-box { background: var(--primary); }
-  li.completed .check-box::after { content: '✔'; color: white; font-size: 14px; }
-
-  li span { flex: 1; font-size: 1rem; }
-  
-  .del-btn { color: #ff7675; border: none; background: none; cursor: pointer; }
-</style>
-
 <script>
-  /* --- 기능 (JavaScript) --- */
   const todoForm = document.getElementById('todo-form');
   const input = document.getElementById('todo-input');
   const todoList = document.getElementById('todo-list');
   const datePicker = document.getElementById('date-picker');
 
-  // 1. 날짜 초기화 (오늘 날짜)
+  // 날짜 설정
   const now = new Date();
   const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
   datePicker.value = today;
 
-  // 2. 데이터 불러오기
   let allTodos = JSON.parse(localStorage.getItem('myArchive')) || [];
 
-  // 3. 화면 그리기
   function render() {
     todoList.innerHTML = '';
     const selectedDate = datePicker.value;
-
-    // 해당 날짜만 필터링 후 완료 여부로 정렬 (미완료가 위로)
     const filtered = allTodos.filter(t => t.date === selectedDate);
     filtered.sort((a, b) => a.completed - b.completed);
 
     filtered.forEach(todo => {
       const li = document.createElement('li');
       if (todo.completed) li.classList.add('completed');
-
       li.innerHTML = `
         <div class="check-box"></div>
         <span>${todo.text}</span>
         <button type="button" class="del-btn">삭제</button>
       `;
-
-      // 완료 토글
-      li.querySelector('.check-box').onclick = () => {
-        todo.completed = !todo.completed;
-        save();
+      li.querySelector('.check-box').onclick = () => { todo.completed = !todo.completed; save(); };
+      li.querySelector('.del-btn').onclick = () => { 
+        allTodos = allTodos.filter(t => t !== todo); 
+        save(); 
       };
-
-      // 삭제
-      li.querySelector('.del-btn').onclick = () => {
-        allTodos = allTodos.filter(t => t !== todo);
-        save();
-      };
-
       todoList.appendChild(li);
     });
   }
@@ -125,23 +139,21 @@
     render();
   }
 
-  // 4. 엔터/클릭 추가 (404 에러 완벽 방지)
   todoForm.onsubmit = function(e) {
-    e.preventDefault(); // 페이지 새로고침 방지
+    e.preventDefault();
     const val = input.value.trim();
     if (!val) return false;
-
-    allTodos.push({
-      text: val,
-      completed: false,
-      date: datePicker.value
-    });
-
+    allTodos.push({ text: val, completed: false, date: datePicker.value });
     input.value = '';
     save();
+    // 추가 후 스크롤을 맨 위로 올림
+    todoList.scrollTop = 0;
     return false;
   };
 
   datePicker.onchange = render;
   render();
 </script>
+
+</body>
+</html>
