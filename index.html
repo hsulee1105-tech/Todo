@@ -11,58 +11,75 @@
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body { 
-      margin: 0; padding: 0; font-family: sans-serif; 
+      margin: 0; padding: 0; font-family: -apple-system, sans-serif; 
       background: var(--bg); display: flex; justify-content: center;
-      height: 100vh; /* 화면 높이 고정 */
-      overflow: hidden; /* 바깥쪽 스크롤 방지 */
+      height: 100vh; overflow: hidden; /* 바닥 스크롤 방지 */
     }
 
     .todo-app {
       width: 100%; max-width: 450px; background: white;
-      height: 100%; /* 부모 높이 따라감 */
-      display: flex; flex-direction: column; /* 세로 배치 */
-      padding: 20px; box-shadow: 0 0 20px rgba(0,0,0,0.05);
+      height: 100%; display: flex; flex-direction: column;
+      box-shadow: 0 0 20px rgba(0,0,0,0.05);
     }
 
-    header { flex-shrink: 0; } /* 헤더는 크기 고정 */
-    header h2 { color: var(--primary); margin: 0 0 10px 0; font-size: 1.4rem; }
+    /* 헤더 영역: 제목과 날짜를 조화롭게 배치 */
+    header { 
+      padding: 20px 20px 10px 20px;
+      background: #fff;
+      border-bottom: 1px solid #eee;
+      flex-shrink: 0;
+    }
     
-    #date-picker {
-      width: 100%; padding: 12px; border-radius: 8px;
-      border: 1px solid #ddd; margin-bottom: 15px; font-size: 1rem;
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
     }
 
+    header h2 { color: var(--primary); margin: 0; font-size: 1.3rem; }
+    
+    /* 날짜 선택기: 잘리지 않도록 너비 조절 및 스타일 개선 */
+    #date-picker {
+      padding: 8px 10px; border-radius: 8px;
+      border: 1px solid #dfe6e9; font-size: 0.9rem;
+      background: #f9f9f9; cursor: pointer;
+    }
+
+    /* 입력 영역 */
     .input-section { 
-      display: flex; gap: 10px; margin-bottom: 20px; flex-shrink: 0; 
+      padding: 15px 20px;
+      display: flex; gap: 8px; flex-shrink: 0;
+      background: #fff;
     }
     
     #todo-input {
       flex: 1; padding: 12px; border: 1px solid #ddd;
-      border-radius: 8px; font-size: 16px;
+      border-radius: 10px; font-size: 16px; /* 16px 미만은 아이폰에서 자동 줌 발생 */
     }
 
     #add-btn {
-      padding: 0 15px; background: var(--primary); color: white;
-      border: none; border-radius: 8px; font-weight: bold;
+      padding: 0 18px; background: var(--primary); color: white;
+      border: none; border-radius: 10px; font-weight: bold;
+      box-shadow: 0 2px 5px rgba(108, 92, 231, 0.3);
     }
 
-    /* [핵심] 리스트 영역만 스크롤되게 설정 */
+    /* 리스트 영역: 스크롤 최적화 */
     #todo-list {
-      list-style: none; padding: 0; margin: 0;
-      flex: 1; /* 남은 공간 모두 차지 */
-      overflow-y: auto; /* 내용 많아지면 스크롤 발생 */
+      list-style: none; padding: 0 20px; margin: 0;
+      flex: 1; overflow-y: auto;
       display: flex; flex-direction: column;
-      padding-bottom: 20px;
+      padding-bottom: 30px; /* 맨 밑 항목 가려짐 방지 */
     }
 
     li {
-      display: flex; align-items: center; padding: 15px;
-      background: #f1f2f6; border-radius: 10px; margin-bottom: 8px;
-      flex-shrink: 0; /* 높이 유지 */
+      display: flex; align-items: center; padding: 14px;
+      background: #f8f9fd; border-radius: 12px; margin-bottom: 10px;
+      flex-shrink: 0; border: 1px solid #f1f2f6;
     }
 
-    li.completed { order: 1; opacity: 0.5; background: #eee; }
-    li.completed span { text-decoration: line-through; }
+    li.completed { order: 1; opacity: 0.5; background: #f1f2f6; border: none; }
+    li.completed span { text-decoration: line-through; color: #a4b0be; }
 
     .check-box {
       width: 24px; height: 24px; border: 2px solid var(--primary);
@@ -73,25 +90,27 @@
     li.completed .check-box { background: var(--primary); }
     li.completed .check-box::after { content: '✔'; color: white; font-size: 12px; }
 
-    li span { flex: 1; font-size: 1rem; word-break: break-all; }
+    li span { flex: 1; font-size: 1rem; color: #2d3436; word-break: break-all; }
     
-    .del-btn { color: #ff7675; border: none; background: none; padding: 5px; }
+    .del-btn { color: #ff7675; border: none; background: none; padding: 5px; font-size: 0.8rem; }
 
-    /* 스크롤바 디자인 (선택사항) */
-    #todo-list::-webkit-scrollbar { width: 5px; }
-    #todo-list::-webkit-scrollbar-thumb { background: #ddd; border-radius: 10px; }
+    /* 스크롤바 깔끔하게 */
+    #todo-list::-webkit-scrollbar { width: 4px; }
+    #todo-list::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
   </style>
 </head>
 <body>
 
 <div class="todo-app">
   <header>
-    <h2>📅 My Todo Archive</h2>
-    <input type="date" id="date-picker">
+    <div class="header-top">
+      <h2>📅 My Todo</h2>
+      <input type="date" id="date-picker">
+    </div>
   </header>
   
   <form id="todo-form" class="input-section">
-    <input type="text" id="todo-input" placeholder="할 일을 입력하세요" required>
+    <input type="text" id="todo-input" placeholder="오늘 뭐 할까요?" required>
     <button type="submit" id="add-btn">추가</button>
   </form>
 
@@ -104,9 +123,10 @@
   const todoList = document.getElementById('todo-list');
   const datePicker = document.getElementById('date-picker');
 
-  // 날짜 설정
+  // 한국 시간 기준 날짜 설정
   const now = new Date();
-  const today = new Date(now.getTime() - (now.getTimezoneOffset() * 60000)).toISOString().split('T')[0];
+  const offset = now.getTimezoneOffset() * 60000;
+  const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
   datePicker.value = today;
 
   let allTodos = JSON.parse(localStorage.getItem('myArchive')) || [];
@@ -115,6 +135,8 @@
     todoList.innerHTML = '';
     const selectedDate = datePicker.value;
     const filtered = allTodos.filter(t => t.date === selectedDate);
+    
+    // 미완료 항목은 최신순, 완료 항목은 아래로
     filtered.sort((a, b) => a.completed - b.completed);
 
     filtered.forEach(todo => {
@@ -127,8 +149,10 @@
       `;
       li.querySelector('.check-box').onclick = () => { todo.completed = !todo.completed; save(); };
       li.querySelector('.del-btn').onclick = () => { 
-        allTodos = allTodos.filter(t => t !== todo); 
-        save(); 
+        if(confirm('삭제하시겠습니까?')) {
+          allTodos = allTodos.filter(t => t !== todo); 
+          save(); 
+        }
       };
       todoList.appendChild(li);
     });
@@ -143,10 +167,10 @@
     e.preventDefault();
     const val = input.value.trim();
     if (!val) return false;
-    allTodos.push({ text: val, completed: false, date: datePicker.value });
+    // 새 항목을 배열 맨 앞에 추가해서 리스트 상단에 뜨게 함
+    allTodos.unshift({ text: val, completed: false, date: datePicker.value });
     input.value = '';
     save();
-    // 추가 후 스크롤을 맨 위로 올림
     todoList.scrollTop = 0;
     return false;
   };
