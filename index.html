@@ -5,15 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>My Mobile Todo</title>
   <style>
-    /* 1. 디자인 (CSS) */
     :root { --primary: #6c5ce7; --bg: #f8f9fa; }
-    
     * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
     body { 
       margin: 0; padding: 0; font-family: -apple-system, sans-serif; 
       background: var(--bg); display: flex; justify-content: center;
-      height: 100vh; overflow: hidden; /* 바닥 스크롤 방지 */
+      height: 100vh; overflow: hidden;
     }
 
     .todo-app {
@@ -22,59 +20,43 @@
       box-shadow: 0 0 20px rgba(0,0,0,0.05);
     }
 
-    /* 헤더 영역: 제목과 날짜를 조화롭게 배치 */
     header { 
-      padding: 20px 20px 10px 20px;
-      background: #fff;
-      border-bottom: 1px solid #eee;
-      flex-shrink: 0;
+      padding: 15px 20px 10px 20px;
+      background: #fff; border-bottom: 1px solid #eee; flex-shrink: 0;
     }
     
-    .header-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 15px;
-    }
-
-    header h2 { color: var(--primary); margin: 0; font-size: 1.3rem; }
+    .header-top { display: flex; justify-content: space-between; align-items: center; }
+    header h2 { color: var(--primary); margin: 0; font-size: 1.1rem; } /* 글씨 크기 축소 */
     
-    /* 날짜 선택기: 잘리지 않도록 너비 조절 및 스타일 개선 */
     #date-picker {
-      padding: 8px 10px; border-radius: 8px;
-      border: 1px solid #dfe6e9; font-size: 0.9rem;
-      background: #f9f9f9; cursor: pointer;
+      padding: 6px 8px; border-radius: 6px;
+      border: 1px solid #dfe6e9; font-size: 0.85rem; /* 글씨 크기 축소 */
+      background: #f9f9f9;
     }
 
-    /* 입력 영역 */
     .input-section { 
-      padding: 15px 20px;
-      display: flex; gap: 8px; flex-shrink: 0;
-      background: #fff;
+      padding: 10px 20px; display: flex; gap: 8px; flex-shrink: 0; background: #fff;
     }
     
     #todo-input {
-      flex: 1; padding: 12px; border: 1px solid #ddd;
-      border-radius: 10px; font-size: 16px; /* 16px 미만은 아이폰에서 자동 줌 발생 */
+      flex: 1; padding: 10px; border: 1px solid #ddd;
+      border-radius: 8px; font-size: 15px; /* 입력창은 15-16px 유지 (모바일 줌 방지) */
     }
 
     #add-btn {
-      padding: 0 18px; background: var(--primary); color: white;
-      border: none; border-radius: 10px; font-weight: bold;
-      box-shadow: 0 2px 5px rgba(108, 92, 231, 0.3);
+      padding: 0 15px; background: var(--primary); color: white;
+      border: none; border-radius: 8px; font-weight: bold; font-size: 0.9rem;
     }
 
-    /* 리스트 영역: 스크롤 최적화 */
     #todo-list {
       list-style: none; padding: 0 20px; margin: 0;
-      flex: 1; overflow-y: auto;
-      display: flex; flex-direction: column;
-      padding-bottom: 30px; /* 맨 밑 항목 가려짐 방지 */
+      flex: 1; overflow-y: auto; display: flex; flex-direction: column;
+      padding-bottom: 30px;
     }
 
     li {
-      display: flex; align-items: center; padding: 14px;
-      background: #f8f9fd; border-radius: 12px; margin-bottom: 10px;
+      display: flex; align-items: center; padding: 12px; /* 패딩 축소 */
+      background: #f8f9fd; border-radius: 10px; margin-bottom: 8px;
       flex-shrink: 0; border: 1px solid #f1f2f6;
     }
 
@@ -82,19 +64,30 @@
     li.completed span { text-decoration: line-through; color: #a4b0be; }
 
     .check-box {
-      width: 24px; height: 24px; border: 2px solid var(--primary);
-      border-radius: 50%; margin-right: 12px; cursor: pointer;
+      width: 22px; height: 22px; border: 2px solid var(--primary);
+      border-radius: 50%; margin-right: 10px; cursor: pointer;
       display: flex; align-items: center; justify-content: center; flex-shrink: 0;
     }
 
     li.completed .check-box { background: var(--primary); }
-    li.completed .check-box::after { content: '✔'; color: white; font-size: 12px; }
+    li.completed .check-box::after { content: '✔'; color: white; font-size: 11px; }
 
-    li span { flex: 1; font-size: 1rem; color: #2d3436; word-break: break-all; }
+    /* 할 일 텍스트 스타일 */
+    .todo-text { 
+      flex: 1; font-size: 0.95rem; color: #2d3436; 
+      word-break: break-all; cursor: text;
+      padding: 4px 0;
+    }
+
+    /* 수정 모드용 입력창 */
+    .edit-input {
+      flex: 1; border: 1px solid var(--primary); border-radius: 4px;
+      padding: 4px; font-size: 0.95rem; font-family: inherit;
+      outline: none;
+    }
     
-    .del-btn { color: #ff7675; border: none; background: none; padding: 5px; font-size: 0.8rem; }
+    .del-btn { color: #ff7675; border: none; background: none; padding: 5px; font-size: 0.75rem; margin-left: 5px; }
 
-    /* 스크롤바 깔끔하게 */
     #todo-list::-webkit-scrollbar { width: 4px; }
     #todo-list::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
   </style>
@@ -123,7 +116,7 @@
   const todoList = document.getElementById('todo-list');
   const datePicker = document.getElementById('date-picker');
 
-  // 한국 시간 기준 날짜 설정
+  // 날짜 설정
   const now = new Date();
   const offset = now.getTimezoneOffset() * 60000;
   const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
@@ -136,24 +129,64 @@
     const selectedDate = datePicker.value;
     const filtered = allTodos.filter(t => t.date === selectedDate);
     
-    // 미완료 항목은 최신순, 완료 항목은 아래로
     filtered.sort((a, b) => a.completed - b.completed);
 
-    filtered.forEach(todo => {
+    filtered.forEach((todo, index) => {
+      // 전체 배열에서의 진짜 인덱스 찾기
+      const actualIndex = allTodos.indexOf(todo);
+      
       const li = document.createElement('li');
       if (todo.completed) li.classList.add('completed');
+      
       li.innerHTML = `
         <div class="check-box"></div>
-        <span>${todo.text}</span>
+        <span class="todo-text">${todo.text}</span>
         <button type="button" class="del-btn">삭제</button>
       `;
-      li.querySelector('.check-box').onclick = () => { todo.completed = !todo.completed; save(); };
-      li.querySelector('.del-btn').onclick = () => { 
+
+      const textSpan = li.querySelector('.todo-text');
+
+      // [기능: 수정] 텍스트 클릭 시 수정 모드로 변경
+      textSpan.onclick = () => {
+        if (todo.completed) return; // 완료된 항목은 수정 불가
+        
+        const editInput = document.createElement('input');
+        editInput.type = 'text';
+        editInput.className = 'edit-input';
+        editInput.value = todo.text;
+        
+        li.replaceChild(editInput, textSpan);
+        editInput.focus();
+
+        // 저장 함수
+        const finishEdit = () => {
+          const newText = editInput.value.trim();
+          if (newText) {
+            todo.text = newText;
+            save();
+          } else {
+            render(); // 빈 칸이면 원래대로
+          }
+        };
+
+        editInput.onblur = finishEdit;
+        editInput.onkeypress = (e) => { if (e.key === 'Enter') finishEdit(); };
+      };
+
+      // 체크 토글
+      li.querySelector('.check-box').onclick = () => {
+        todo.completed = !todo.completed;
+        save();
+      };
+
+      // 삭제
+      li.querySelector('.del-btn').onclick = () => {
         if(confirm('삭제하시겠습니까?')) {
-          allTodos = allTodos.filter(t => t !== todo); 
-          save(); 
+          allTodos.splice(actualIndex, 1);
+          save();
         }
       };
+
       todoList.appendChild(li);
     });
   }
@@ -167,11 +200,9 @@
     e.preventDefault();
     const val = input.value.trim();
     if (!val) return false;
-    // 새 항목을 배열 맨 앞에 추가해서 리스트 상단에 뜨게 함
     allTodos.unshift({ text: val, completed: false, date: datePicker.value });
     input.value = '';
     save();
-    todoList.scrollTop = 0;
     return false;
   };
 
