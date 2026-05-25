@@ -1,214 +1,235 @@
 <!DOCTYPE html>
 <html lang="ko">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>My Mobile Todo</title>
-  <style>
-    :root { --primary: #6c5ce7; --bg: #f8f9fa; }
-    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>My Mobile Todo</title>
+    <style>
+        :root { --primary: #6c5ce7; --bg: #f8f9fa; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
 
-    body { 
-      margin: 0; padding: 0; font-family: -apple-system, sans-serif; 
-      background: var(--bg); display: flex; justify-content: center;
-      height: 100vh; overflow: hidden;
-    }
+        body {
+            margin: 0; padding: 0; font-family: -apple-system, sans-serif;
+            background: var(--bg); display: flex; justify-content: center;
+            height: 100vh; overflow: hidden;
+        }
 
-    .todo-app {
-      width: 100%; max-width: 450px; background: white;
-      height: 100%; display: flex; flex-direction: column;
-      box-shadow: 0 0 20px rgba(0,0,0,0.05);
-    }
+        .todo-app {
+            width: 100%; max-width: 450px; background: white;
+            height: 100%; display: flex; flex-direction: column;
+            box-shadow: 0 0 20px rgba(0,0,0,0.05);
+        }
 
-    header { 
-      padding: 15px 20px 10px 20px;
-      background: #fff; border-bottom: 1px solid #eee; flex-shrink: 0;
-    }
-    
-    .header-top { display: flex; justify-content: space-between; align-items: center; }
-    header h2 { color: var(--primary); margin: 0; font-size: 1.1rem; } /* 글씨 크기 축소 */
-    
-    #date-picker {
-      padding: 6px 8px; border-radius: 6px;
-      border: 1px solid #dfe6e9; font-size: 0.85rem; /* 글씨 크기 축소 */
-      background: #f9f9f9;
-    }
+        header {
+            padding: 15px 20px 10px 20px;
+            background: #fff; border-bottom: 1px solid #eee; flex-shrink: 0;
+        }
 
-    .input-section { 
-      padding: 10px 20px; display: flex; gap: 8px; flex-shrink: 0; background: #fff;
-    }
-    
-    #todo-input {
-      flex: 1; padding: 10px; border: 1px solid #ddd;
-      border-radius: 8px; font-size: 15px; /* 입력창은 15-16px 유지 (모바일 줌 방지) */
-    }
+        .header-top { display: flex; justify-content: space-between; align-items: center; }
+        header h2 { color: var(--primary); margin: 0; font-size: 1.1rem; }
 
-    #add-btn {
-      padding: 0 15px; background: var(--primary); color: white;
-      border: none; border-radius: 8px; font-weight: bold; font-size: 0.9rem;
-    }
+        #date-picker {
+            padding: 6px 8px; border-radius: 6px;
+            border: 1px solid #dfe6e9; font-size: 0.85rem;
+            background: #f9f9f9;
+        }
 
-    #todo-list {
-      list-style: none; padding: 0 20px; margin: 0;
-      flex: 1; overflow-y: auto; display: flex; flex-direction: column;
-      padding-bottom: 30px;
-    }
+        .input-section {
+            padding: 10px 20px; display: flex; gap: 8px; flex-shrink: 0; background: #fff;
+        }
 
-    li {
-      display: flex; align-items: center; padding: 12px; /* 패딩 축소 */
-      background: #f8f9fd; border-radius: 10px; margin-bottom: 8px;
-      flex-shrink: 0; border: 1px solid #f1f2f6;
-    }
+        #todo-input {
+            flex: 1; padding: 10px; border: 1px solid #ddd;
+            border-radius: 8px; font-size: 15px;
+        }
 
-    li.completed { order: 1; opacity: 0.5; background: #f1f2f6; border: none; }
-    li.completed span { text-decoration: line-through; color: #a4b0be; }
+        #add-btn {
+            padding: 0 15px; background: var(--primary); color: white;
+            border: none; border-radius: 8px; font-weight: bold; font-size: 0.9rem;
+        }
 
-    .check-box {
-      width: 22px; height: 22px; border: 2px solid var(--primary);
-      border-radius: 50%; margin-right: 10px; cursor: pointer;
-      display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-    }
+        #todo-list {
+            list-style: none; padding: 0 20px; margin: 0;
+            flex: 1; overflow-y: auto; display: flex; flex-direction: column;
+            padding-bottom: 30px;
+        }
 
-    li.completed .check-box { background: var(--primary); }
-    li.completed .check-box::after { content: '✔'; color: white; font-size: 11px; }
+        li {
+            display: flex; align-items: center; padding: 12px;
+            background: #f8f9fd; border-radius: 10px; margin-bottom: 8px;
+            flex-shrink: 0; border: 1px solid #f1f2f6;
+        }
 
-    /* 할 일 텍스트 스타일 */
-    .todo-text { 
-      flex: 1; font-size: 0.95rem; color: #2d3436; 
-      word-break: break-all; cursor: text;
-      padding: 4px 0;
-    }
+        li.completed { order: 1; opacity: 0.5; background: #f1f2f6; border: none; }
+        li.completed span { text-decoration: line-through; color: #a4b0be; }
 
-    /* 수정 모드용 입력창 */
-    .edit-input {
-      flex: 1; border: 1px solid var(--primary); border-radius: 4px;
-      padding: 4px; font-size: 0.95rem; font-family: inherit;
-      outline: none;
-    }
-    
-    .del-btn { color: #ff7675; border: none; background: none; padding: 5px; font-size: 0.75rem; margin-left: 5px; }
+        .check-box {
+            width: 22px; height: 22px; border: 2px solid var(--primary);
+            border-radius: 50%; margin-right: 10px; cursor: pointer;
+            display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+        }
 
-    #todo-list::-webkit-scrollbar { width: 4px; }
-    #todo-list::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
-  </style>
+        li.completed .check-box { background: var(--primary); }
+        li.completed .check-box::after { content: '✔'; color: white; font-size: 11px; }
+
+        .todo-text {
+            flex: 1; font-size: 0.95rem; color: #2d3436;
+            word-break: break-all; cursor: text;
+            padding: 4px 0;
+        }
+
+        .edit-input {
+            flex: 1; border: 1px solid var(--primary); border-radius: 4px;
+            padding: 4px; font-size: 0.95rem; font-family: inherit;
+            outline: none;
+        }
+
+        .del-btn { color: #ff7675; border: none; background: none; padding: 5px; font-size: 0.75rem; margin-left: 5px; }
+
+        #todo-list::-webkit-scrollbar { width: 4px; }
+        #todo-list::-webkit-scrollbar-thumb { background: #eee; border-radius: 10px; }
+    </style>
 </head>
 <body>
-
-<div class="todo-app">
-  <header>
-    <div class="header-top">
-      <h2>📅 My Todo</h2>
-      <input type="date" id="date-picker">
+    <div class="todo-app">
+        <header>
+            <div class="header-top">
+                <h2>📅 My Todo</h2>
+                <input type="date" id="date-picker">
+            </div>
+        </header>
+        <form class="input-section" id="todo-form">
+            <input type="text" id="todo-input" placeholder="할 일을 입력하세요" autocomplete="off">
+            <button type="submit" id="add-btn">추가</button>
+        </form>
+        <ul id="todo-list"></ul>
     </div>
-  </header>
-  
-  <form id="todo-form" class="input-section">
-    <input type="text" id="todo-input" placeholder="오늘 뭐 할까요?" required>
-    <button type="submit" id="add-btn">추가</button>
-  </form>
 
-  <ul id="todo-list"></ul>
-</div>
+    <script>
+        const todoForm = document.getElementById('todo-form');
+        const input = document.getElementById('todo-input');
+        const todoList = document.getElementById('todo-list');
+        const datePicker = document.getElementById('date-picker');
 
-<script>
-  const todoForm = document.getElementById('todo-form');
-  const input = document.getElementById('todo-input');
-  const todoList = document.getElementById('todo-list');
-  const datePicker = document.getElementById('date-picker');
+        function getLocalISODate(date = new Date()) {
+            const offset = date.getTimezoneOffset() * 60000;
+            return new Date(date.getTime() - offset).toISOString().split('T')[0];
+        }
 
-  // 날짜 설정
-  const now = new Date();
-  const offset = now.getTimezoneOffset() * 60000;
-  const today = new Date(now.getTime() - offset).toISOString().split('T')[0];
-  datePicker.value = today;
+        function addOneDay(isoDate) {
+            const d = new Date(isoDate + 'T12:00:00');
+            d.setDate(d.getDate() + 1);
+            return getLocalISODate(d);
+        }
 
-  let allTodos = JSON.parse(localStorage.getItem('myArchive')) || [];
+        const today = getLocalISODate();
+        datePicker.value = today;
 
-  function render() {
-    todoList.innerHTML = '';
-    const selectedDate = datePicker.value;
-    const filtered = allTodos.filter(t => t.date === selectedDate);
-    
-    filtered.sort((a, b) => a.completed - b.completed);
+        let allTodos = JSON.parse(localStorage.getItem('myArchive')) || [];
 
-    filtered.forEach((todo, index) => {
-      // 전체 배열에서의 진짜 인덱스 찾기
-      const actualIndex = allTodos.indexOf(todo);
-      
-      const li = document.createElement('li');
-      if (todo.completed) li.classList.add('completed');
-      
-      li.innerHTML = `
-        <div class="check-box"></div>
-        <span class="todo-text">${todo.text}</span>
-        <button type="button" class="del-btn">삭제</button>
-      `;
+        /** 미완료 할 일: 과거 날짜 → 하루씩 밀어 targetDate(보통 오늘)까지 이월 */
+        function rolloverIncompleteTodos(targetDate) {
+            let changed = false;
+            allTodos.forEach(todo => {
+                if (todo.completed || !todo.date || todo.date >= targetDate) return;
+                while (todo.date < targetDate) {
+                    todo.date = addOneDay(todo.date);
+                    changed = true;
+                }
+            });
+            return changed;
+        }
 
-      const textSpan = li.querySelector('.todo-text');
+        function render() {
+            todoList.innerHTML = '';
+            const selectedDate = datePicker.value;
+            const filtered = allTodos.filter(t => t.date === selectedDate);
 
-      // [기능: 수정] 텍스트 클릭 시 수정 모드로 변경
-      textSpan.onclick = () => {
-        if (todo.completed) return; // 완료된 항목은 수정 불가
-        
-        const editInput = document.createElement('input');
-        editInput.type = 'text';
-        editInput.className = 'edit-input';
-        editInput.value = todo.text;
-        
-        li.replaceChild(editInput, textSpan);
-        editInput.focus();
+            filtered.sort((a, b) => a.completed - b.completed);
 
-        // 저장 함수
-        const finishEdit = () => {
-          const newText = editInput.value.trim();
-          if (newText) {
-            todo.text = newText;
+            filtered.forEach((todo) => {
+                const actualIndex = allTodos.indexOf(todo);
+
+                const li = document.createElement('li');
+                if (todo.completed) li.classList.add('completed');
+
+                li.innerHTML = `
+                    <div class="check-box"></div>
+                    <span class="todo-text"></span>
+                    <button type="button" class="del-btn">삭제</button>
+                `;
+                li.querySelector('.todo-text').textContent = todo.text;
+
+                const textSpan = li.querySelector('.todo-text');
+
+                textSpan.onclick = () => {
+                    if (todo.completed) return;
+
+                    const editInput = document.createElement('input');
+                    editInput.type = 'text';
+                    editInput.className = 'edit-input';
+                    editInput.value = todo.text;
+
+                    li.replaceChild(editInput, textSpan);
+                    editInput.focus();
+
+                    const finishEdit = () => {
+                        const newText = editInput.value.trim();
+                        if (newText) {
+                            todo.text = newText;
+                            save();
+                        } else {
+                            render();
+                        }
+                    };
+
+                    editInput.onblur = finishEdit;
+                    editInput.onkeypress = (e) => { if (e.key === 'Enter') finishEdit(); };
+                };
+
+                li.querySelector('.check-box').onclick = () => {
+                    todo.completed = !todo.completed;
+                    save();
+                };
+
+                li.querySelector('.del-btn').onclick = () => {
+                    if (confirm('삭제하시겠습니까?')) {
+                        allTodos.splice(actualIndex, 1);
+                        save();
+                    }
+                };
+
+                todoList.appendChild(li);
+            });
+        }
+
+        function save() {
+            localStorage.setItem('myArchive', JSON.stringify(allTodos));
+            render();
+        }
+
+        function applyRolloverAndRender() {
+            const selected = datePicker.value;
+            if (rolloverIncompleteTodos(selected)) {
+                localStorage.setItem('myArchive', JSON.stringify(allTodos));
+            }
+            render();
+        }
+
+        todoForm.onsubmit = function (e) {
+            e.preventDefault();
+            const val = input.value.trim();
+            if (!val) return false;
+            allTodos.unshift({ text: val, completed: false, date: datePicker.value });
+            input.value = '';
             save();
-          } else {
-            render(); // 빈 칸이면 원래대로
-          }
+            return false;
         };
 
-        editInput.onblur = finishEdit;
-        editInput.onkeypress = (e) => { if (e.key === 'Enter') finishEdit(); };
-      };
+        datePicker.onchange = applyRolloverAndRender;
 
-      // 체크 토글
-      li.querySelector('.check-box').onclick = () => {
-        todo.completed = !todo.completed;
-        save();
-      };
-
-      // 삭제
-      li.querySelector('.del-btn').onclick = () => {
-        if(confirm('삭제하시겠습니까?')) {
-          allTodos.splice(actualIndex, 1);
-          save();
-        }
-      };
-
-      todoList.appendChild(li);
-    });
-  }
-
-  function save() {
-    localStorage.setItem('myArchive', JSON.stringify(allTodos));
-    render();
-  }
-
-  todoForm.onsubmit = function(e) {
-    e.preventDefault();
-    const val = input.value.trim();
-    if (!val) return false;
-    allTodos.unshift({ text: val, completed: false, date: datePicker.value });
-    input.value = '';
-    save();
-    return false;
-  };
-
-  datePicker.onchange = render;
-  render();
-</script>
-
+        // 앱 열 때: 어제(이전) 미완료 → 오늘로 이월 후 표시
+        applyRolloverAndRender();
+    </script>
 </body>
 </html>
